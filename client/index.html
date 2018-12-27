@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Todo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="container my-3" id="login">
+        <div class="row">
+            <div class="col-12 p-0 text-center">
+                <img src="./images/logo.png" alt style="height:40%;">
+                <h6>
+                    Belum punya akun ? <a onclick="register()"> Daftar di sini </a>
+                </h6>
+                <div class="row">
+                    <div class="col-md-4 mx-auto">
+                        <div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1" class="text-left">Email address</label>
+                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email"
+                                    id="login_email">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Password</label>
+                                <input type="password" class="form-control" aria-describedby="emailHelp" placeholder="Enter password"
+                                    id="login_password">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" onclick="LoginProcess()">
+                                Log In
+                            </button>
+
+                        </div>
+                        <br>
+                        <h6>
+                            <a href="#">
+                                <hr>
+                                Home
+                                <hr>
+                            </a>
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register -->
+    <div class="container my-3" id="register">
+        <div class="row">
+            <div class="col-12 p-0 text-center">
+                <img src="./images/logo.png" alt style="height:30%;">
+                <h5 class="font-weight-light mb-3">Please input your data</h5>
+                <div class="row">
+                    <div class="col-md-4 mx-auto">
+                        <div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1" class="text-left">Name</label>
+                                <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="name"
+                                    id="register_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1" class="text-left">Email address</label>
+                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="enter email"
+                                    id="register_email">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Password</label>
+                                <input type="password" class="form-control" aria-describedby="emailHelp" placeholder="enter password"
+                                    id="register_password">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" onclick="RegisterProcess()">Register</button>
+                        </div>
+                        <br>
+                        <h6>
+                            <a href="#">
+                                <hr>
+                                Home
+                                <hr>
+                            </a>
+                        </h6>
+                        Sudah punya akun? Silakan <a onclick="login()" return false>login </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- navbar -->
+    <div id="navbar">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Todo List</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" onclick="showTask()">Tasks <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" onclick="showGroup()">Groups <span class="sr-only"></span></a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-right:20px">Search</button>
+
+                </form>
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+    </div>
+    <br>
+    <div class="container" id="home">
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <div class="card" style="width:15rem;">
+                    <img class="card-img-top" src="./images/profil.svg" alt="Card image cap" style="margin-top:10px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Sulistyo</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Task</h6>
+                                <div class="card" id="taskCard">
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Group</h6>
+                                <div class="card" id="groupCard">
+                                    <div class="card-body">
+                                        <h4>5</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" data-toggle="modal"
+                                    data-target="#AddTaskModal" style="width:200px">Add
+                                    Task</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 ">
+                <div id="task">
+                    <h3>Tasks</h3>
+                    <hr>
+                    <div class="card">
+                        <div class=" card-header">
+                            Task list
+                        </div>
+                        <ul class="list-group list-group-flush" id="listTask">
+                            <!-- content -->
+                        </ul>
+                    </div>
+                </div>
+                <div id="group">
+                    <h3>Group</h3>
+                    <hr>
+                    <div class="card">
+                        <div class=" card-header">
+                            group list
+                            <a class="fa fa-plus" aria-hidden="true" style="float:right" data-toggle="modal"
+                                data-target="#createGroupModal"> create</a>
+                        </div>
+                        <ul class="list-group list-group-flush" id="listGroup">
+                            <!-- content -->
+                        </ul>
+                    </div>
+                </div>
+                <div id="valueGroup">
+                    <h3 id="group_id">Group</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class=" card-header">
+                                    Members
+                                    <a class="fa fa-plus" aria-hidden="true" style="float:right" data-toggle="modal"
+                                        data-target="#addMemberModal"> add</a>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush" id="listMemberGroup">
+                                        <!-- content member -->
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class=" card-header">
+                                    Task list
+                                    <a class="fa fa-plus" aria-hidden="true" style="float:right" data-toggle="modal"
+                                        data-target="#AddTaskModal"> create</a>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush" id="listTaskGroup">
+
+                                        <!-- content -->
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Task Detail</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="detailTask">
+
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Add Task -->
+    <div class="modal fade" id="AddTaskModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add New Task </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="form-group">
+                            <label class="text-left">Title</label>
+                            <input type="text" class="form-control" placeholder="name" id="addTask_title">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-left">Description</label>
+                            <textarea class="form-control" rows="3" id="addTask_description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Due Date</label>
+                            <input type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control" id="addTask_dueDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="addTask()">add</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal update Task -->
+    <div class="modal fade" id="UpdateTaskModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateTask_id">Update Task </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="form-group">
+                            <label class="text-left">Title</label>
+                            <input type="text" class="form-control" placeholder="name" id="updateTask_title">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-left">Description</label>
+                            <textarea class="form-control" rows="3" id="updateTask_description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Due Date</label>
+                            <input type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control" id="updateTask_dueDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="taskUpdate()">update</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- createGroup -->
+
+    <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add New Group </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="form-group">
+                            <label class="text-left">Title</label>
+                            <input type="text" class="form-control" placeholder="name" id="addGroup_title">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-left">Description</label>
+                            <textarea class="form-control" rows="3" id="addGroup_description"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="createGroup()">add</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- update group -->
+    <div class="modal fade" id="UpdateGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateGroup_id">Update Group </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="form-group">
+                            <label class="text-left">Title</label>
+                            <input type="text" class="form-control" placeholder="title" id="updateGroup_title">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-left">Description</label>
+                            <textarea class="form-control" rows="3" id="updateGroup_description"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="updateGroup()">update</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- addMembers -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateGroup_id">Add Member Group </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="input email" id="member_email">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="searchUser()">Search</button>
+                    </div>
+
+                    <ul class="list-group list-group-flush" id="listAddMember">
+
+                        <!-- contentAddMember -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script src="./script/script.js"></script>
+</body>
+
+</html>
