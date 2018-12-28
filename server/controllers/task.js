@@ -6,6 +6,8 @@ module.exports = {
             title: req.body.title,
             description: req.body.description,
             createdAt: Date.now(),
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
             due_date: req.body.due_date,
             completed: false,
             user_id: req.decoded.id,
@@ -19,7 +21,7 @@ module.exports = {
         Task.create(newTask)
             .then((result) => {
                 res.status(200).json({
-                    result
+                    result: result, message: "You have been successfully add new task"
                 })
 
             }).catch((err) => {
@@ -54,7 +56,7 @@ module.exports = {
         Task.updateOne({ _id: req.body.id }, updateTask)
             .then((result) => {
                 res.status(200).json({
-                    result
+                    result: result, message: "You have been successfully update new task"
                 })
 
             }).catch((err) => {

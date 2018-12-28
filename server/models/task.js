@@ -13,6 +13,12 @@ const TaskSchema = new Schema({
     due_date: {
         type: Date
     },
+    latitude: {
+        type: Number
+    },
+    longitude: {
+        type: Number
+    },
     createdAt: {
         type: Number
     },

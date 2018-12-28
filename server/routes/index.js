@@ -12,6 +12,8 @@ router.get("/", (req, res) => {
 router.get("/validate", isLogin, userController.isLogin)
 router.post("/register", userController.register)
 router.post("/login", userController.login)
+router.post("/glogin", userController.glogin)
+
 
 
 module.exports = router;

@@ -1,7 +1,34 @@
 
 $(document).ready(
+
     isLogin()
 )
+
+
+function onSignIn(googleUser) {
+    var id_token = googleUser.getAuthResponse().id_token;
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:3000/glogin",
+        data: {
+            gtoken: id_token
+        }
+    })
+        .done((result) => {
+            localStorage.setItem("token", result.data_token)
+            $("#personalName").html("")
+            $("#personalName").append(`
+        <h5 class="card-title">${result.name}</h5>
+        `)
+            home()
+
+        })
+        .fail((err) => {
+            console.log(err);
+        })
+
+
+}
 
 function isLogin() {
     let token = localStorage.getItem("token")
@@ -20,6 +47,10 @@ function isLogin() {
             }
         })
             .done((result) => {
+                $("#personalName").html("")
+                $("#personalName").append(`
+                <h5 class="card-title">${result.name}</h5>
+                `)
                 $("#register").hide()
                 $("#login").hide()
                 $("#group").hide()
@@ -60,6 +91,10 @@ function home() {
 }
 function logout() {
     localStorage.removeItem("token")
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log("User signed out.");
+    });
     $("#home").hide()
     $("#register").hide()
     $("#navbar").hide()
@@ -77,15 +112,76 @@ function RegisterProcess() {
         }
     })
         .done((result) => {
-            login()
+            $("#register_name").val("")
+            $("#register_email").val("")
+            $("#register_password").val("")
+
+            $("#error_register").html("")
+            $("#error_register").append(`
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${result.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+
+                `
+            )
         })
         .fail((err) => {
+
+            if (err.responseJSON.err.errors.email) {
+                $("#error_register").html("")
+                $("#error_register").append(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${err.responseJSON.err.errors.email.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+    
+    
+                `
+                )
+            }
+            if (err.responseJSON.err.errors.password) {
+                $("#error_register").html("")
+                $("#error_register").append(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${err.responseJSON.err.errors.password.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+    
+    
+                `
+                )
+            }
+            if (err.responseJSON.err.errors.name) {
+                $("#error_register").html("")
+                $("#error_register").append(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${err.responseJSON.err.errors.name.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+    
+    
+                `
+                )
+            }
+
+
+
             register()
         })
 
 }
 
 function LoginProcess() {
+
     $.ajax({
         type: "POST",
         url: "http://localhost:3000/login",
@@ -97,16 +193,44 @@ function LoginProcess() {
     })
         .done((result) => {
             localStorage.setItem("token", result.data_token)
+            $("#personalName").html("")
+            $("#personalName").append(`
+            <h5 class="card-title">${result.name}</h5>
+            `)
             home()
 
         })
         .fail((err) => {
+            console.log(err.responseJSON.message);
+            $("#error_login").html("")
+            $("#error_login").append(`
 
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${err.responseJSON.message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+
+
+            `
+            )
         })
 }
 
-function addTask() {
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(addTask);
+    }
+}
+
+
+
+function addTask(position) {
+    console.log(position);
+
     let token = localStorage.getItem("token")
+
     $.ajax({
         type: "POST",
         url: "http://localhost:3000/tasks",
@@ -114,6 +238,8 @@ function addTask() {
             title: $("#addTask_title").val(),
             description: $("#addTask_description").val(),
             due_date: $("#addTask_dueDate").val(),
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
             group_id: $("#group_id").val()
         },
         headers: {
@@ -122,17 +248,53 @@ function addTask() {
 
     })
         .done((result) => {
-            showTask()
-            $("#addTask_title").val('')
-            $("#addTask_description").val('')
-            $("#addTask_dueDate").val('')
-            $("#group_id").val('')
+            if ($("#group_id").val()) {
+                groupDetail($("#group_id").val())
+                $("#addTask_title").val('')
+                $("#addTask_description").val('')
+                $("#addTask_dueDate").val('')
+                $("#group_id").val('')
+
+                $("#task_register_message").html("")
+                $("#task_register_message").append(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${result.message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+    
+                    `
+                )
+
+            }
+            else {
+                showTask()
+                $("#addTask_title").val('')
+                $("#addTask_description").val('')
+                $("#addTask_dueDate").val('')
+                $("#group_id").val('')
+
+                $("#task_register_message").html("")
+                $("#task_register_message").append(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${result.message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+    
+                    `
+                )
+            }
         })
         .fail((err) => {
 
         })
 }
 function showTask() {
+
+    $("#group_id").val('')
     $("#task").show()
     $("#group").hide()
     $("#valueGroup").hide()
@@ -148,8 +310,19 @@ function showTask() {
         }
     })
         .done((tasks) => {
+            let taskCardCount = 0
+            let taskGroupCount = 0
+
             tasks.task.forEach((task, index) => {
+                if (!task.group_id && task.completed === false) {
+                    taskCardCount += 1
+                }
+                if (task.group_id && task.completed === false) {
+                    taskGroupCount++
+                }
+
                 if (!task.group_id) {
+
                     $("#listTask").append(`
                     <li class="list-group-item">
                     <div class="row">
@@ -173,7 +346,7 @@ function showTask() {
                         $(`#${index}`).append(
                             `
                     <button type="button" class="btn btn-outline-success my-2 my-sm-0" data-toggle="modal"
-                        data-target="#exampleModalCenter" onclick="taskDetail('${task._id}','${task.title}','${task.description}','${task.due_date}')">
+                        data-target="#exampleModalCenter" onclick="taskDetail('${task._id}','${task.title}','${task.description}','${task.due_date}','${task.latitude}','${task.longitude}')">
                         detail
                     </button>
                     <button type="button" class="btn btn-outline-success my-2 my-sm-0"  onclick="completTask('${task._id}')">
@@ -188,7 +361,7 @@ function showTask() {
                         $(`#${index}`).append(
                             `
                     <button type="button" class="btn btn-outline-success my-2 my-sm-0" data-toggle="modal"
-                        data-target="#exampleModalCenter" onclick="taskDetail('${task._id}','${task.title}','${task.description}','${task.due_date}')">
+                        data-target="#exampleModalCenter" onclick="taskDetail('${task._id}','${task.title}','${task.description}','${task.due_date}','${task.latitude}','${task.longitude}')">
                         detail
                     </button>
                     <button type="button" class="btn btn-outline-success my-2 my-sm-0">
@@ -204,27 +377,65 @@ function showTask() {
             $('#taskCard').html('')
             $('#taskCard').append(`
                 <div class="card-body">
-                    <h4> ${tasks.task.length}</h4>
+                    <h4> ${taskCardCount}</h4>
                 </div>
             `)
-
+            $('#groupCard').html('')
+            $('#groupCard').append(`
+                <div class="card-body">
+                    <h4> ${taskGroupCount}</h4>
+                </div>
+            `)
         })
         .fail((err) => {
             console.log(err);
 
         })
 }
-function taskDetail(id, title, description, due_date) {
+function taskDetail(id, title, description, due_date, latitude, longitude) {
+
+    var uluru = { lat: Number(latitude), lng: Number(longitude) };
+
     $("#detailTask").html("")
     $("#detailTask").val(id)
 
     $('#detailTask').append(`
-    <h5>title :${title}</h5>
-    <h5>Description: ${description}</h5>
-    <h5>Due Date :${due_date}</h5>
+    <h5>${title}</h5>
+    <p>${description}</p>
+    <h6>Due Date :${due_date.slice(0, 10)}</h6>
+    <div>
+    <div id="map" style="padding:10px; height: 300px; width:100%;">
+    </div>
+    </div>
     `)
 
+    console.log(uluru);
+    var map = new google.maps.Map(
+        document.getElementById('map'), { zoom: 12, center: uluru });
+    var marker = new google.maps.Marker({ position: uluru, map: map });
+    var geocoder = new google.maps.Geocoder;
+    var infowindow = new google.maps.InfoWindow;
+    geocodeLatLng(geocoder, map, infowindow, uluru);
+}
 
+function geocodeLatLng(geocoder, map, infowindow, latlng) {
+    geocoder.geocode({ 'location': latlng }, function (results, status) {
+        if (status === 'OK') {
+            if (results[0]) {
+                map.setZoom(11);
+                var marker = new google.maps.Marker({
+                    position: latlng,
+                    map: map
+                });
+                infowindow.setContent(results[0].formatted_address);
+                infowindow.open(map, marker);
+            } else {
+                window.alert('No results found');
+            }
+        } else {
+            window.alert('Geocoder failed due to: ' + status);
+        }
+    });
 }
 
 function showTaskUpdate(id, title, description, ) {
@@ -248,13 +459,48 @@ function taskUpdate() {
         }
 
     })
-        .done((data) => {
-            showTask()
-            $("#updateTask_id").val('')
-            $("#updateTask_title").val('')
-            $("#updateTask_description").val('')
-            $("#updateTask_dueDate").val('')
+        .done((result) => {
+            if ($("#group_id").val()) {
+                groupDetail($("#group_id").val())
+                $("#updateTask_id").val('')
+                $("#updateTask_title").val('')
+                $("#updateTask_description").val('')
+                $("#updateTask_dueDate").val('')
 
+
+                $("#task_update_message").html("")
+                $("#task_update_message").append(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${result.message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+    
+                    `
+                )
+
+            }
+            else {
+                showTask()
+                $("#updateTask_id").val('')
+                $("#updateTask_title").val('')
+                $("#updateTask_description").val('')
+                $("#updateTask_dueDate").val('')
+
+                $("#task_update_message").html("")
+                $("#task_update_message").append(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${result.message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+    
+                    `
+                )
+
+            }
         })
         .fail((err) => {
             console.log(err);
@@ -275,7 +521,12 @@ function deleteTask(id) {
 
     })
         .done((data) => {
-            showTask()
+            if ($("#group_id").val()) {
+                groupDetail($("#group_id").val())
+            }
+            else {
+                showTask()
+            }
         })
         .fail((err) => {
             console.log(err);
@@ -295,7 +546,13 @@ function completTask(id) {
 
     })
         .done((data) => {
-            showTask()
+            if ($("#group_id").val()) {
+                groupDetail($("#group_id").val())
+            }
+            else {
+                showTask()
+            }
+
         })
         .fail((err) => {
             console.log(err);
@@ -464,27 +721,28 @@ function groupDetail(id) {
     })
         .done((result) => {
             $("#listTaskGroup").html("")
-            result.task.forEach(list => {
+            result.task.forEach((list, index) => {
+
+
                 $("#listTaskGroup").append(`
                     <li class="list-group-item">
                     <a class="fa fa-pencil-square-o" aria-hidden="true" data-toggle="modal"
                     data-target="#UpdateTaskModal" onclick="showTaskUpdate('${list._id}','${list.title}','${list.description}')"></a>
                     <a class="fa fa-table" aria-hidden="true" data-toggle="modal"
-                    data-target="#exampleModalCenter"  onclick="taskDetail('${list._id}','${list.title}','${list.description}','${list.due_date}')" ></a>
+                    data-target="#exampleModalCenter"  onclick="taskDetail('${list._id}','${list.title}','${list.description}','${list.due_date}','${list.latitude}','${list.longitude}')" ></a>
                     <a class="fa fa-check-square-o" aria-hidden="true" onclick="completTask('${list._id}')"></a>
                     <hr>
-                    <div id="titleTaskGroup">
+                    <div id="${index}Task">
                    
                    
                     </div>
-                 
-                  
-                  
                     <hr>
                     </li>`)
 
                 if (!list.completed) {
-                    $('#titleTaskGroup').append(` 
+                    $(`#${index}Task`).html("")
+                    $(`#${index}Task`).append(`
+
                     <h6>
                     ${list.title}
                     <a class="fa fa-trash-o" aria-hidden="true" style="float:right" onclick="deleteTask('${list._id}')"></a>
@@ -493,7 +751,8 @@ function groupDetail(id) {
                     `)
                 }
                 else {
-                    $('#titleTaskGroup').append(` 
+                    $(`#${index}Task`).html("")
+                    $(`#${index}Task`).append(` 
                     <h6>
                     <strike> ${list.title}</strike>
                     <a class="fa fa-trash-o" aria-hidden="true" style="float:right" onclick="deleteTask('${list._id}')"></a>
@@ -509,6 +768,42 @@ function groupDetail(id) {
 
         })
 
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:3000/tasks",
+        headers: {
+            token: token
+        }
+    })
+        .done((tasks) => {
+            let taskCardCount = 0
+            let taskGroupCount = 0
+            tasks.task.forEach((task, index) => {
+                if (!task.group_id && task.completed === false) {
+                    taskCardCount += 1
+                }
+                if (task.group_id && task.completed === false) {
+                    taskGroupCount++
+                }
+            });
+
+            $('#taskCard').html('')
+            $('#taskCard').append(`
+                <div class="card-body">
+                    <h4> ${taskCardCount}</h4>
+                </div>
+            `)
+            $('#groupCard').html('')
+            $('#groupCard').append(`
+                <div class="card-body">
+                    <h4> ${taskGroupCount}</h4>
+                </div>
+            `)
+        })
+        .fail(() => {
+
+        })
+
 }
 function searchUser() {
     let token = localStorage.getItem("token")
@@ -520,6 +815,7 @@ function searchUser() {
         }
     })
         .done((result) => {
+            $("#member_email").val("")
             $("#listAddMember").append(`
             <li class="list-group-item">
             <hr>
@@ -551,6 +847,7 @@ function addMember(id) {
         }
     })
         .done(() => {
+            $("#listAddMember").html("")
             groupDetail($("#group_id").val())
         })
         .fail(() => {
@@ -569,7 +866,34 @@ function deleteMember(id) {
             token: token
         }
     })
-        .done(() => {
+        .done((result) => {
+            if (result.message) {
+                $("#member_list_message").html("")
+                $("#member_list_message").append(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${result.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+
+                `
+                )
+            }
+            else {
+                $("#member_list_message").html("")
+                $("#member_list_message").append(`
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                You have successfully removed
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+
+                `
+                )
+            }
+
             groupDetail($("#group_id").val())
         })
         .fail(() => {

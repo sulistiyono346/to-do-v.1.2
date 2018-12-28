@@ -107,29 +107,39 @@ module.exports = {
             });
     },
     deleteMember: (req, res) => {
-
         Group.findOne({ _id: req.params.id })
             .then((result) => {
                 var index = result.members.findIndex(n => {
                     return n == req.body.id;
                 });
-                console.log(index);
+                console.log(result.members[index]);
+                console.log(req.decoded.id);
 
-                if (index !== -1) {
-                    result.members.splice(index, 1)
-                    console.log(result);
 
-                    Group.updateOne({ _id: result._id }, result)
-                        .then((result) => {
-                            res.status(200).json({
-                                result
-                            })
-                        }).catch((err) => {
-                            res.status(400).json({
-                                err
-                            })
-                        });
+                if (String(result.members[index]) === String(req.decoded.id) || String(result.members[0]) === String(req.decoded.id)) {
+
+
+                    if (index !== -1) {
+                        result.members.splice(index, 1)
+                        Group.updateOne({ _id: result._id }, result)
+                            .then((result) => {
+                                res.status(200).json({
+                                    result
+                                })
+                            }).catch((err) => {
+                                res.status(400).json({
+                                    err
+                                })
+                            });
+                    }
                 }
+                else {
+                    res.status(200).json({
+                        message: "you don't have permission to access"
+                    })
+                }
+
+
 
             }).catch((err) => {
                 res.status(400).json({

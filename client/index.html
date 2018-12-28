@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Todo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta name="google-signin-client_id" content="953043872745-vkj78dgbjd29df484aujlbcmbm9042ca.apps.googleusercontent.com">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -19,6 +19,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
 </head>
 
 <body>
@@ -26,35 +28,33 @@
         <div class="row">
             <div class="col-12 p-0 text-center">
                 <img src="./images/logo.png" alt style="height:40%;">
+
                 <h6>
                     Belum punya akun ? <a onclick="register()"> Daftar di sini </a>
                 </h6>
                 <div class="row">
                     <div class="col-md-4 mx-auto">
                         <div>
+                            <div id="error_login">
+
+                            </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1" class="text-left">Email address</label>
-                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email"
-                                    id="login_email">
+                                <input type="email" class="form-control" aria-describedby="emailHelp" aria-describedby="emailHelp"
+                                    placeholder="me@example.com" id="login_email">
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Password</label>
-                                <input type="password" class="form-control" aria-describedby="emailHelp" placeholder="Enter password"
-                                    id="login_password">
+                                <input type="password" class="form-control" aria-describedby="emailHelp" id="login_password">
                             </div>
                             <button type="submit" class="btn btn-primary btn-block" onclick="LoginProcess()">
                                 Log In
                             </button>
-
+                            <hr>
+                            <i>or</i>
+                            <hr>
+                            <div class="g-signin2" data-onsuccess="onSignIn" style="width:365px"></div>
                         </div>
-                        <br>
-                        <h6>
-                            <a href="#">
-                                <hr>
-                                Home
-                                <hr>
-                            </a>
-                        </h6>
                     </div>
                 </div>
             </div>
@@ -70,6 +70,9 @@
                 <div class="row">
                     <div class="col-md-4 mx-auto">
                         <div>
+                            <div id="error_register">
+
+                            </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1" class="text-left">Name</label>
                                 <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="name"
@@ -88,13 +91,7 @@
                             <button type="submit" class="btn btn-primary btn-block" onclick="RegisterProcess()">Register</button>
                         </div>
                         <br>
-                        <h6>
-                            <a href="#">
-                                <hr>
-                                Home
-                                <hr>
-                            </a>
-                        </h6>
+
                         Sudah punya akun? Silakan <a onclick="login()" return false>login </a>
                     </div>
                 </div>
@@ -104,7 +101,7 @@
     <!-- navbar -->
     <div id="navbar">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Todo List</a>
+            <a class="navbar-brand" onclick="showTask()">Todo List</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -119,11 +116,6 @@
                         <a class="nav-link" onclick="showGroup()">Groups <span class="sr-only"></span></a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-right:20px">Search</button>
-
-                </form>
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="logout()">Logout</button>
             </div>
         </nav>
@@ -135,20 +127,20 @@
                 <div class="card" style="width:15rem;">
                     <img class="card-img-top" src="./images/profil.svg" alt="Card image cap" style="margin-top:10px;">
                     <div class="card-body">
-                        <h5 class="card-title">Sulistyo</h5>
+                        <div id="personalName">
+
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <h6>Task</h6>
+                                <h6>Personal Task</h6>
                                 <div class="card" id="taskCard">
-
+                                    <!-- content -->
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h6>Group</h6>
+                                <h6>Group Task</h6>
                                 <div class="card" id="groupCard">
-                                    <div class="card-body">
-                                        <h4>5</h4>
-                                    </div>
+                                    <!-- content -->
                                 </div>
                             </div>
                         </div>
@@ -206,6 +198,9 @@
                                         data-target="#addMemberModal"> add</a>
                                 </div>
                                 <div class="card-body">
+                                    <div id="member_list_message">
+
+                                    </div>
                                     <ul class="list-group list-group-flush" id="listMemberGroup">
                                         <!-- content member -->
                                     </ul>
@@ -248,7 +243,9 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+
                 <div class="modal-body" id="detailTask">
+
 
                 </div>
                 <div class="modal-footer">
@@ -269,7 +266,11 @@
                 </div>
                 <div class="modal-body">
                     <div>
+
                         <div class="form-group">
+                            <div id="task_register_message">
+
+                            </div>
                             <label class="text-left">Title</label>
                             <input type="text" class="form-control" placeholder="name" id="addTask_title">
                         </div>
@@ -281,7 +282,7 @@
                             <label>Due Date</label>
                             <input type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control" id="addTask_dueDate">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block" onclick="addTask()">add</button>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="getLocation()">add</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -304,6 +305,9 @@
                 <div class="modal-body">
                     <div>
                         <div class="form-group">
+                            <div id="task_update_message">
+
+                            </div>
                             <label class="text-left">Title</label>
                             <input type="text" class="form-control" placeholder="name" id="updateTask_title">
                         </div>
@@ -415,9 +419,10 @@
     </div>
 
 
-
-
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=taskDetail">
+    </script>
     <script src="./script/script.js"></script>
+
 </body>
 
 </html>
