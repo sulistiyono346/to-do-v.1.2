@@ -1,11 +1,11 @@
-const jwt = require("jsonwebtoken")
+const jwt = require('jsonwebtoken')
 
 module.exports = {
-    token: (data) => {
-        return jwt.sign(data, process.env.ENV_TOKEN)
+    create_token: (data) => {
+        return jwt.sign(data, process.env.JWT_TOKEN)
     },
-    verifyToken: (data, callback) => {
-        jwt.verify(data, process.env.ENV_TOKEN, (err, decoded) => {
+    verify_token: (data, callback) => {
+        jwt.verify(data, process.env.JWT_TOKEN, (err, decoded) => {
             if (err) {
                 callback(err, null)
             }

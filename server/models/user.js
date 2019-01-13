@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const encrypt = require('../helpers/encrypt')
+const { encrypt } = require('../helpers/encrypt')
 
 const UserSchema = new Schema({
     name: {
         type: String,
         required: [true, "name can't be blank"]
     },
+
     email: {
         type: String,
         required: [true, "email can't be blank"],
@@ -28,7 +29,14 @@ const UserSchema = new Schema({
         minlength: [5, "minimum length is 5 caracter"],
         required: [true, "password can't be blank"]
 
-    }
+    },
+    img: {
+        type: String
+    },
+    register_by: {
+        type: String,
+    },
+
 });
 
 UserSchema.pre("save", function () {

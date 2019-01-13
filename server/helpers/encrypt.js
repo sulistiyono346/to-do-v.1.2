@@ -1,8 +1,12 @@
-const encrypt = require('bcryptjs')
-const salt = encrypt.genSaltSync(10)
+const bcrypt = require('bcryptjs')
+const salt = bcrypt.genSaltSync(10)
 
 
-function encryptPass(params) {
-    return encrypt.hashSync(params, salt)
+module.exports = {
+    encrypt: (params) => {
+        return bcrypt.hashSync(params, salt)
+    },
+    dcrypt: (params, params1) => {
+        return bcrypt.compareSync(params, params1)
+    }
 }
-module.exports = encryptPass

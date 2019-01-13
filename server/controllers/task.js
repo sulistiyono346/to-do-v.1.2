@@ -2,33 +2,43 @@ const Task = require("../models/task")
 
 module.exports = {
     createTask: (req, res) => {
-        let newTask = {
-            title: req.body.title,
-            description: req.body.description,
-            createdAt: Date.now(),
-            latitude: req.body.latitude,
-            longitude: req.body.longitude,
-            due_date: req.body.due_date,
-            completed: false,
-            user_id: req.decoded.id,
 
+        var due_date = +new Date(req.body.due_date)
+        if (due_date < Date.now()) {
+            res.status(400).json({
+                message: "no valid date"
+            })
         }
-        if (req.body.group_id) {
+        else {
+            let newTask = {
+                title: req.body.title,
+                description: req.body.description,
+                createdAt: Date.now(),
+                latitude: req.body.latitude,
+                longitude: req.body.longitude,
+                due_date: req.body.due_date,
+                completed: false,
+                user_id: req.decoded.id,
 
-            newTask.group_id = req.body.group_id
+            }
+            if (req.body.group_id) {
+
+                newTask.group_id = req.body.group_id
+            }
+
+            Task.create(newTask)
+                .then((result) => {
+                    res.status(200).json({
+                        result: result, message: "You have been successfully add new task"
+                    })
+
+                }).catch((err) => {
+                    res.status(400).json({
+                        err
+                    })
+                });
         }
 
-        Task.create(newTask)
-            .then((result) => {
-                res.status(200).json({
-                    result: result, message: "You have been successfully add new task"
-                })
-
-            }).catch((err) => {
-                res.status(400).json({
-                    err
-                })
-            });
     },
     getTask: (req, res) => {
         Task.find({ user_id: req.decoded.id })

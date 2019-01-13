@@ -1,9 +1,9 @@
 const User = require("../models/user")
-const { verifyToken } = require('../helpers/token')
+const { verify_token } = require('../helpers/token')
 
 module.exports = {
     isLogin: (req, res, next) => {
-        verifyToken(req.headers.token, function (err, decoded) {
+        verify_token(req.headers.token, function (err, decoded) {
             if (err) {
                 res.status(400).json({
                     message: "forbidden access to this resource on the server is denied"
@@ -15,7 +15,8 @@ module.exports = {
                         req.decoded = {
                             id: result._id,
                             name: result.name,
-                            email: result.email
+                            email: result.email,
+                            img: result.img
                         }
                         next()
 

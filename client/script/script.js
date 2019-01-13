@@ -1,6 +1,5 @@
 
 $(document).ready(
-
     isLogin()
 )
 
@@ -15,12 +14,19 @@ function onSignIn(googleUser) {
         }
     })
         .done((result) => {
+            $("#image_profile").html("")
+
             localStorage.setItem("token", result.data_token)
             $("#personalName").html("")
             $("#personalName").append(`
-        <h5 class="card-title">${result.name}</h5>
-        `)
+             <h5 class="card-title">${result.name}</h5>
+             `)
+            $("#image_profile").append(`
+                <img class="card-img-top" src="${result.img}"
+                alt="Card image cap" ">
+                ` )
             home()
+
 
         })
         .fail((err) => {
@@ -31,6 +37,7 @@ function onSignIn(googleUser) {
 }
 
 function isLogin() {
+    $("#image_profile").html("")
     let token = localStorage.getItem("token")
     if (!token) {
         $("#home").hide()
@@ -47,6 +54,13 @@ function isLogin() {
             }
         })
             .done((result) => {
+                console.log(result);
+
+                $("#image_profile").append(`
+                <img class="card-img-top" src="${result.img}"
+                alt="Card image cap" >
+                ` )
+
                 $("#personalName").html("")
                 $("#personalName").append(`
                 <h5 class="card-title">${result.name}</h5>
@@ -192,11 +206,16 @@ function LoginProcess() {
         }
     })
         .done((result) => {
+            $("#image_profile").html("")
             localStorage.setItem("token", result.data_token)
             $("#personalName").html("")
             $("#personalName").append(`
             <h5 class="card-title">${result.name}</h5>
             `)
+            $("#image_profile").append(`
+            <img class="card-img-top" src="${result.img}"
+            alt="Card image cap" style="margin-top:10px;">
+            ` )
             home()
 
         })
@@ -227,7 +246,7 @@ function getLocation() {
 
 
 function addTask(position) {
-    console.log(position);
+
 
     let token = localStorage.getItem("token")
 
@@ -289,7 +308,17 @@ function addTask(position) {
             }
         })
         .fail((err) => {
+            $("#task_register_message").html("")
+            $("#task_register_message").append(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Due Date Cannot Before the Current Date, please try again !
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
 
+                `
+            )
         })
 }
 function showTask() {

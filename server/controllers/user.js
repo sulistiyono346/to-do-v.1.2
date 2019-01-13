@@ -1,6 +1,6 @@
 const User = require("../models/user")
-const dcrypt = require("bcryptjs")
-const { token } = require("../helpers/token")
+const { dcrypt } = require("../helpers/encrypt")
+const { create_token } = require("../helpers/token")
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
@@ -10,6 +10,8 @@ module.exports = {
         let new_user = {
             name: req.body.name,
             email: req.body.email,
+            img: "https://profile.actionsprout.com/default.jpeg",
+            register_by: "own_app",
             password: req.body.password
         }
 
@@ -29,16 +31,16 @@ module.exports = {
             .then((result) => {
 
                 if (result) {
-                    let dcryptPass = dcrypt.compareSync(req.body.password, result.password)
+                    let dcryptPass = dcrypt(req.body.password, result.password)
                     if (dcryptPass) {
                         let data = {
                             id: result._id,
                             name: result.name,
                             email: result.email
                         }
-                        let data_token = token(data)
+                        let data_token = create_token(data)
                         res.status(200).json({
-                            data_token: data_token, name: result.name
+                            data_token: data_token, name: result.name, img: result.img
                         })
 
                     }
@@ -63,7 +65,6 @@ module.exports = {
     },
 
     glogin: (req, res) => {
-
         async function verify() {
             const ticket = await client.verifyIdToken({
                 idToken: req.body.gtoken,
@@ -71,21 +72,46 @@ module.exports = {
             });
 
             let payload = ticket.getPayload()
+
             User.findOne({ email: payload.email })
                 .then((result) => {
-                    let data = {
-                        id: result._id,
-                        name: result.name,
-                        email: result.email
+                    if (result) {
+                        let data = {
+                            id: result._id,
+                            name: result.name,
+                            email: result.email
+                        }
+
+                        let data_token = create_token(data)
+
+
+                        res.status(200).json({
+                            data_token: data_token, name: result.name, img: result.img
+                        })
                     }
-                    let data_token = token(data)
-                    res.status(200).json({
-                        data_token: data_token, name: result.name
-                    })
-                }).catch((err) => {
-                    res.status(400).json({
-                        err
-                    })
+                    else {
+                        let name = payload.given_name + " " + payload.family_name
+                        let new_user = {
+                            name: name,
+                            email: payload.email,
+                            img: payload.picture,
+                            register_by: "google_app",
+                            password: process.env.G_PASSWORD
+                        }
+                        User.create(new_user)
+                            .then((result) => {
+                                let data_token = create_token(result)
+                                res.status(200).json({
+                                    data_token: data_token, name: result.name, img: result.img
+                                })
+
+                            })
+
+                    }
+
+                }).
+                catch((err) => {
+                    res.status(400).json(err)
                 });
 
 
@@ -112,7 +138,7 @@ module.exports = {
     isLogin: (req, res) => {
 
         res.status(200).json({
-            message: "valid user", name: req.decoded.name
+            message: "valid user", name: req.decoded.name, img: req.decoded.img
         })
     }
 }
