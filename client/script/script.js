@@ -532,7 +532,17 @@ function taskUpdate() {
             }
         })
         .fail((err) => {
-            console.log(err);
+            $("#task_update_message").html("")
+            $("#task_update_message").append(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Due Date Cannot Before the Current Date, please try again !
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+
+                `
+            )
         })
 
 }

@@ -28,6 +28,7 @@ module.exports = {
 
             Task.create(newTask)
                 .then((result) => {
+
                     res.status(200).json({
                         result: result, message: "You have been successfully add new task"
                     })
@@ -45,6 +46,7 @@ module.exports = {
             .populate('user_id')
             .populate('group_id')
             .then((task) => {
+
                 res.status(200).json({
                     task
                 })
@@ -57,23 +59,32 @@ module.exports = {
             });
     },
     updateTask: (req, res) => {
-
-        let updateTask = {
-            title: req.body.title,
-            description: req.body.description,
-            due_date: req.body.due_date,
+        var due_date = +new Date(req.body.due_date)
+        if (due_date < Date.now()) {
+            res.status(400).json({
+                message: "no valid date"
+            })
         }
-        Task.updateOne({ _id: req.body.id }, updateTask)
-            .then((result) => {
-                res.status(200).json({
-                    result: result, message: "You have been successfully update new task"
-                })
+        else {
+            let updateTask = {
+                title: req.body.title,
+                description: req.body.description,
+                due_date: req.body.due_date,
+            }
+            Task.updateOne({ _id: req.body.id }, updateTask)
+                .then((result) => {
+                    res.status(200).json({
+                        result: result, message: "You have been successfully update new task"
+                    })
 
-            }).catch((err) => {
-                res.status(400).json({
-                    err
-                })
-            });
+                }).catch((err) => {
+                    res.status(400).json({
+                        err
+                    })
+                });
+        }
+
+
     },
     deleteTask: (req, res) => {
         Task.deleteOne({ _id: req.body.id })
